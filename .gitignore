@@ -1,0 +1,21 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencias
+/node_modules/
+/vendor/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Archivos de log
+*.log

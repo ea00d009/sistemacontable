@@ -1,0 +1,550 @@
+<!doctypehtml>
+<html lang="en">
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1"name="viewport">
+  <title>Sistema Contable 1.0.1 (BETA) - Organizacion Empresarial - TUP - San José
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
+  <script src="inline-script.js"defer>
+  </script>
+  <script src="auth.js"></script>
+  <script>
+      // Verificar si el usuario está autenticado y tiene rol de empleado
+      if (!authManager.isLoggedIn() || authManager.getCurrentUserRole() !== 'empleado') {
+          window.location.href = 'index.html';
+      }
+  </script>
+  <body class="font-sans bg-gray-100">
+    <div class="flex min-h-screen">
+      <div class="shadow-sm bg-white border-b fixed left-0 right-0 top-0 z-10">
+        <div class="flex items-center container justify-between mx-auto px-4 py-3">
+          <div class="flex items-center">
+            <img alt="Logo"class="mr-2 h-8 w-8"src="logo.png">
+            <h1 class="text-xl font-bold text-gray-800">Sistema Contable 1.0.1 (BETA) - Organizacion Empresarial - TUP - San José
+            </h1>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-600 text-sm">Usuario: Empleado
+            </span>
+            <button class="hover:text-red-800 text-red-600 text-sm" onclick="authManager.logout()">
+              <i class="fas fa-sign-out-alt mr-1">
+              </i>Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white fixed left-0 border-r bottom-0 overflow-y-auto top-14 w-64">
+        <nav class="p-4">
+          <div class="mb-6">
+            <h3 class="text-gray-500 text-xs tracking-wider uppercase font-semibold mb-3">Operaciones Diarias
+            </h3>
+            <div class="space-y-2">
+              <a class="text-gray-600 text-sm duration-150 flex hover:bg-indigo-50 hover:text-indigo-600 items-center px-3 py-2 rounded-lg transition-colors"href="#"onclick='showSection("ventas")'>
+                <i class="fas h-5 w-5 fa-shopping-cart">
+                </i>
+                <span class="ml-2">Registrar Ventas
+                </span>
+              </a>
+              <a class="text-gray-600 text-sm duration-150 flex hover:bg-indigo-50 hover:text-indigo-600 items-center px-3 py-2 rounded-lg transition-colors"href="#"onclick='showSection("facturacion")'>
+                <i class="fas h-5 w-5 fa-file-invoice">
+                </i>
+                <span class="ml-2">Facturación
+                </span>
+              </a>
+            </div>
+          </div>
+          <div class="mb-6">
+            <h3 class="text-gray-500 text-xs tracking-wider uppercase font-semibold mb-3">Reportes y Análisis
+            </h3>
+            <div class="space-y-2">
+              <a class="text-gray-600 text-sm duration-150 flex hover:bg-indigo-50 hover:text-indigo-600 items-center px-3 py-2 rounded-lg transition-colors"href="#"onclick='showSection("reportes")'>
+                <i class="fas h-5 w-5 fa-chart-line">
+                </i>
+                <span class="ml-2">Generar Reportes
+                </span>
+              </a>
+              <a class="text-gray-600 text-sm duration-150 flex hover:bg-indigo-50 hover:text-indigo-600 items-center px-3 py-2 rounded-lg transition-colors"href="#"onclick='showSection("ventasChart")'>
+                <i class="fas h-5 w-5 fa-chart-bar">
+                </i>
+                <span class="ml-2">Gráfico de Ventas
+                </span>
+              </a>
+              <a class="text-gray-600 text-sm duration-150 flex hover:bg-indigo-50 hover:text-indigo-600 items-center px-3 py-2 rounded-lg transition-colors"href="#"onclick='showSection("transacciones")'>
+                <i class="fas h-5 w-5 fa-history">
+                </i>
+                <span class="ml-2">Historial de Transacciones
+                </span>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-gray-500 text-xs tracking-wider uppercase font-semibold mb-3">Sistema
+            </h3>
+            <div class="space-y-2">
+              <a class="text-gray-600 text-sm duration-150 flex hover:bg-indigo-50 hover:text-indigo-600 items-center px-3 py-2 rounded-lg transition-colors"href="#"onclick='showSection("Configuracion")'>
+                <i class="fas h-5 w-5 fa-cog">
+                </i>
+                <span class="ml-2">Configuración
+                </span>
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="p-6 flex-1 ml-64 mt-14"role="main">
+        <div class="hidden p-4 rounded bg-green-500 mb-6 text-white"id="notification">
+          <i class="fas mr-2 fa-check-circle">
+          </i>
+          <span id="notificationMessage">
+          </span>
+        </div>
+        <div class="content-section"id="ventas">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Registrar Ventas
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <form id="ventasForm"class="space-y-4">
+              <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="Cliente">Cliente
+                  </label>
+                  <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="Cliente"name="Cliente"required>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="Producto">Producto
+                  </label>
+                  <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="Producto"name="Producto"required>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="fechaVenta">Fecha de Venta
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="fechaVenta"required name="fechaVenta"type="date">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cantidad">Cantidad
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cantidad"required name="cantidad"type="number"min="1">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="precioVenta">Precio de Venta
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="precioVenta"required name="precioVenta"type="number"min="0"step="0.01">
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="submit">
+                  <i class="fas mr-2 fa-shopping-cart">
+                  </i>Registrar Venta
+                </button>
+              </div>
+            </form>
+            <div class="mt-8">
+              <h3 class="mb-4 font-semibold text-gray-700 text-xl">Últimas Ventas
+              </h3>
+              <div class="bg-white p-6 shadow-md rounded"id="ventasView">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section"id="compras">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Registrar Compras
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <form id="comprasForm"class="space-y-4">
+              <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="fechaCompra">Fecha de Compra
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="fechaCompra"required name="fechaCompra"type="date">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="Proveedor">Proveedor
+                  </label>
+                  <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="Proveedor"name="Proveedor"required>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="ProductoCompra">Producto
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="ProductoCompra"required name="ProductoCompra">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cantidadCompra">Cantidad
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cantidadCompra"required name="cantidadCompra"type="number"min="1">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="precioCompra">Precio de Compra
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="precioCompra"required name="precioCompra"type="number"min="0"step="0.01">
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="submit">
+                  <i class="fas mr-2 fa-shopping-basket">
+                  </i>Registrar Compra
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="mt-8">
+            <h3 class="mb-4 font-semibold text-gray-700 text-xl">Últimas Compras
+            </h3>
+            <div class="bg-white p-6 shadow-md rounded"id="comprasView">
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section"id="inventario">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Administrar Inventario
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <form id="inventoryForm"class="space-y-4">
+              <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="Producto-inv">Producto
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="Producto-inv"required name="Producto-inv">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cantidad-inv">Cantidad en Stock
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cantidad-inv"required name="cantidad-inv"type="number"min="0">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="costo-inv">Precio de costo
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="costo-inv"required name="costo-inv"type="number"min="0"step="0.01">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="venta-inv">Precio de Venta
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="venta-inv"required name="venta-inv"type="number"min="0"step="0.01">
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="submit">
+                  <i class="fas mr-2 fa-save">
+                  </i>Guardar Producto
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="mt-8">
+            <h3 class="mb-4 font-semibold text-gray-700 text-xl">Inventario Actual
+            </h3>
+            <div class="bg-white p-6 shadow-md rounded"id="inventoryView">
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section section"id="Clientes">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Gestionar Clientes
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <form id="ClienteForm"class="space-y-4">
+              <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="nombre-Cliente">Nombre del Cliente
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="nombre-Cliente"required name="nombre-Cliente">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cuit-Cliente">CUIT
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cuit-Cliente"required name="cuit-Cliente"placeholder="XX-XXXXXXXX-X"pattern="\d{2}-\d{8}-\d{1}">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="telefono-Cliente">Teléfono
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="telefono-Cliente"required name="telefono-Cliente"type="tel">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="email-Cliente">Email
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="email-Cliente"required name="email-Cliente"type="email">
+                </div>
+                <div class="mb-4 md:col-span-2">
+                  <label class="font-medium block mb-2 text-gray-700"for="direccion-Cliente">Dirección
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="direccion-Cliente"required name="direccion-Cliente">
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="submit">
+                  <i class="fas mr-2 fa-save">
+                  </i>Guardar Cliente
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="mt-8">
+            <h3 class="mb-4 font-semibold text-gray-700 text-xl">Lista de Clientes
+            </h3>
+            <div class="bg-white p-6 shadow-md rounded"id="ClientesView">
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section section"id="Proveedores">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Gestionar Proveedores
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <form id="ProveedorForm"class="space-y-4">
+              <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="nombre-Proveedor">Nombre del Proveedor
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="nombre-Proveedor"required name="nombre-Proveedor">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cuit-Proveedor">CUIT
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cuit-Proveedor"required name="cuit-Proveedor"placeholder="XX-XXXXXXXX-X"pattern="\d{2}-\d{8}-\d{1}">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="telefono-Proveedor">Teléfono
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="telefono-Proveedor"required name="telefono-Proveedor"type="tel">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="email-Proveedor">Email
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="email-Proveedor"required name="email-Proveedor"type="email">
+                </div>
+                <div class="mb-4 md:col-span-2">
+                  <label class="font-medium block mb-2 text-gray-700"for="direccion-Proveedor">Dirección
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="direccion-Proveedor"required name="direccion-Proveedor">
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="submit">
+                  <i class="fas mr-2 fa-save">
+                  </i>Guardar Proveedor
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="mt-8">
+            <h3 class="mb-4 font-semibold text-gray-700 text-xl">Lista de Proveedores
+            </h3>
+            <div class="bg-white p-6 shadow-md rounded"id="ProveedoresView">
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section"id="facturas">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Generar Facturas
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <button class="mb-4 bg-indigo-500 font-medium hover:bg-indigo-600 px-4 py-2 rounded-md text-white"id="previewInvoice">
+              <i class="fas mr-2 fa-eye">
+              </i>Previsualizar Factura
+            </button>
+            <div class="hidden p-4 rounded bg-gray-100 shadow-md"id="invoicePreview">
+              <h3 class="mb-4 font-bold text-xl">Factura
+              </h3>
+              <div class="text-gray-700"id="invoiceContent">
+              </div>
+              <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600 mt-4"id="downloadInvoice">
+                <i class="fas mr-2 fa-download">
+                </i>Descargar Factura
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section"id="reportes">
+          <h2 class="text-gray-600 font-bold text-2xl mb-6">Reportes Financieros
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded-lg mb-6">
+            <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
+              <div>
+                <label class="font-medium block mb-2 text-gray-700 text-sm">Período
+                </label>
+                <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-500"id="reportPeriod">
+                  <option value="day">Hoy
+                  <option value="week">Esta Semana
+                  <option value="month">Este Mes
+                  <option value="year">Este Año
+                  <option value="custom">Personalizado
+                </select>
+              </div>
+              <div>
+                <label class="font-medium block mb-2 text-gray-700 text-sm">Tipo de Reporte
+                </label>
+                <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-500"id="reportType">
+                  <option value="sales">Ventas
+                  <option value="purchases">Compras
+                  <option value="inventory">Inventario
+                  <option value="profit">Ganancias
+                  <option value="complete">Reporte Completo
+                </select>
+              </div>
+              <div class="flex items-end">
+                <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors w-full"type="button"onclick="generateReport()">
+                  <i class="fas mr-2 fa-sync-alt">
+                  </i>Generar Reporte
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white p-6 shadow-md rounded-lg"id="reportView">
+            <div class="mb-6"id="reportHeader">
+            </div>
+            <div class="overflow-x-auto"id="reportContent">
+            </div>
+            <div class="border-gray-200 border-t mt-6 pt-4"id="reportSummary">
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section"id="ventasChart">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Gráfico de Ventas y Ganancias
+          </h2>
+          <canvas id="ventasChart">
+          </canvas>
+        </div>
+        <div class="hidden content-section"id="transacciones">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Historial de Transacciones
+          </h2>
+          <div class="mb-4">
+            <label class="font-medium block mb-2 text-gray-700"for="transactionType">Filtrar por tipo:
+            </label>
+            <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="transactionType">
+              <option value="all">Todos
+              <option value="venta">Venta
+              <option value="compra">Compra
+            </select>
+          </div>
+          <div class="bg-white p-6 shadow-md rounded text-gray-800"id="transactionHistoryView">
+          </div>
+        </div>
+        <div class="hidden content-section"id="Configuracion">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Datos personales
+          </h2>
+          <div class="mb-4">
+            <button class="button logout"onclick="cerrarSesion()">Cerrar Sesión
+            </button>
+            <label class="font-medium block mb-2 text-gray-700"for="transactionType">Filtrar por tipo:
+            </label>
+            <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="transactionType">
+              <option value="all">Todos
+              <option value="venta">Venta
+              <option value="compra">Compra
+            </select>
+          </div>
+          <div class="bg-white p-6 shadow-md rounded text-gray-800"id="transactionHistoryView">
+          </div>
+        </div>
+        <div class="hidden content-section"id="facturacion">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Generar Factura
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 class="mb-4 font-semibold text-gray-700 text-lg">Seleccionar Venta
+                </h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="font-medium block mb-2 text-gray-700 text-sm">Ventas Recientes
+                    </label>
+                    <select class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="ventaFactura">
+                      <option value="">Seleccione una venta
+                    </select>
+                  </div>
+                  <div>
+                    <label class="font-medium block mb-2 text-gray-700 text-sm">Número de Factura
+                    </label>
+                    <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="numeroFactura"required>
+                  </div>
+                  <div>
+                    <label class="font-medium block mb-2 text-gray-700 text-sm">Fecha de Emisión
+                    </label>
+                    <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="fechaEmision"required type="date">
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 class="mb-4 font-semibold text-gray-700 text-lg">Vista Previa
+                </h3>
+                <div class="p-4 bg-gray-50 border min-h-[400px] rounded-lg"id="facturaPreview">
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end mt-6 space-x-4">
+              <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="button"onclick="generarFactura()">
+                <i class="fas mr-2 fa-file-invoice">
+                </i>Generar Factura
+              </button>
+              <button class="font-medium px-4 py-2 rounded-md text-white bg-gray-500 hover:bg-gray-600"type="button"onclick="imprimirFactura()">
+                <i class="fas mr-2 fa-print">
+                </i>Imprimir
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="hidden content-section"id="libroDiario">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Libro Diario
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <form id="diarioForm">
+              <div class="grid gap-4 grid-cols-2">
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="fechaDiario">Fecha
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="fechaDiario"required type="date">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="descripcionDiario">Descripción
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="descripcionDiario"required>
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cuentaDebe">Cuenta Debe
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cuentaDebe"required>
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="montoDebe">Monto Debe
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="montoDebe"required type="number"step="0.01">
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="cuentaHaber">Cuenta Haber
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="cuentaHaber"required>
+                </div>
+                <div class="mb-4">
+                  <label class="font-medium block mb-2 text-gray-700"for="montoHaber">Monto Haber
+                  </label>
+                  <input class="rounded-md w-full border-gray-300 focus:ring focus:ring-indigo-200 shadow-sm focus:border-indigo-300 focus:ring-opacity-50"id="montoHaber"required type="number"step="0.01">
+                </div>
+              </div>
+              <button class="font-medium px-4 py-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-600"type="submit">
+                <i class="fas mr-2 fa-plus">
+                </i>Registrar Asiento
+              </button>
+            </form>
+          </div>
+          <div class="bg-white p-6 shadow-md rounded mt-6"id="libroDiarioView">
+          </div>
+        </div>
+        <div class="hidden content-section"id="libroMayor">
+          <h2 class="mb-4 font-bold text-2xl text-gray-600">Libro Mayor
+          </h2>
+          <div class="bg-white p-6 shadow-md rounded">
+            <table class="divide-gray-200 divide-y min-w-full">
+              <thead>
+                <tr>
+                  <th class="font-medium bg-gray-50 px-6 py-3 text-gray-500 text-left text-xs tracking-wider uppercase">Cuenta
+                  <th class="font-medium bg-gray-50 px-6 py-3 text-gray-500 text-left text-xs tracking-wider uppercase">Debe
+                  <th class="font-medium bg-gray-50 px-6 py-3 text-gray-500 text-left text-xs tracking-wider uppercase">Haber
+                  <th class="font-medium bg-gray-50 px-6 py-3 text-gray-500 text-left text-xs tracking-wider uppercase">Saldo
+                    <tbody class="bg-white divide-gray-200 divide-y"id="libroMayorBody">
+                </table>
+                </div>
+              </div>
+          </div>
+        </div>
+    </body>
+</html>
